@@ -35,23 +35,39 @@ public class MainActivityPresenter {
     }
 
     private void showProgress(boolean reload){
-        if(reload)
-            view.showProgress();
-        else
-            view.showLoadMore();
+        try {
+            if (reload)
+                view.showProgress();
+            else
+                view.showLoadMore();
+        }catch(NullPointerException e){
+
+        }
     }
 
     private void hideProgress(boolean reload){
-        if(reload)
-            view.hideProgress();
-        else
-            view.hideLoadMore();
+        try {
+            if (reload)
+                view.hideProgress();
+            else
+                view.hideLoadMore();
+        }catch(NullPointerException e){
+
+        }
+    }
+
+    private void refreshAccounts(){
+        try{
+            view.refreshAccounts();
+        }catch(NullPointerException e){
+
+        }
     }
 
     public void refetchClients(){
         offset = 0;
         clearAccounts();
-        view.refreshAccounts();
+        refreshAccounts();
         fetchClients(true);
     }
 
@@ -75,7 +91,7 @@ public class MainActivityPresenter {
 
                     if(accounts != null){
                         appendAccounts(accounts);
-                        view.refreshAccounts();
+                        refreshAccounts();
                     }
                 }
                 hideProgress(reload);
@@ -95,6 +111,10 @@ public class MainActivityPresenter {
 
     public Integer getTotalServerAccounts() {
         return totalServerAccounts;
+    }
+
+    public void onDestroy(){
+        view = null;
     }
 
     public interface View {

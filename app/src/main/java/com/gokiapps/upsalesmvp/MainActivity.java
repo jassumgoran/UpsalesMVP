@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
             public boolean onLoadMore(int page, int totalItemsCount) {
 
                 if(presenter.getTotalServerAccounts() > totalItemsCount) {
-                    //runOnUiThread(() -> presenter.fetchClients());
                     loadMore();
                     return true;
                 }
@@ -81,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
     public void showLoadMore() {
         runOnUiThread(() -> {
             progressView.setVisibility(View.VISIBLE);
-            //lvAccounts.addFooterView(progressView);
         });
     }
 
@@ -89,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
     public void hideLoadMore() {
         runOnUiThread(() -> {
             progressView.setVisibility(View.GONE);
-            //lvAccounts.removeFooterView(progressView);
         });
     }
 
@@ -100,5 +97,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
 
     private void loadMore(){
         runOnUiThread(() -> presenter.fetchClients());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
     }
 }
