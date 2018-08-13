@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
         presenter = new MainActivityPresenter(this);
 
         progressView = LayoutInflater.from(this).inflate(R.layout.progress, null);
+        progressView.setVisibility(View.GONE);
 
         accountsAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, presenter.getAccounts());
         lvAccounts.setAdapter(accountsAdapter);
