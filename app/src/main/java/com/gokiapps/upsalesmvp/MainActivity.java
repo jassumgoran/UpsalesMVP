@@ -43,20 +43,20 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
 
         handleEvents();
 
-        presenter.refetchClients();
+        presenter.refetchAccounts();
     }
 
     private void handleEvents(){
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            runOnUiThread(() -> presenter.refetchClients());
+            runOnUiThread(() -> presenter.refetchAccounts());
         });
 
         lvAccounts.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
 
-                if(presenter.getTotalServerAccounts() > totalItemsCount) {
+                if(presenter.loadMore()) {
                     loadMore();
                     return true;
                 }
@@ -91,12 +91,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
     }
 
     @Override
-    public void refreshAccounts() {
+    public void renderAccounts() {
         runOnUiThread(() -> accountsAdapter.notifyDataSetChanged());
     }
 
     private void loadMore(){
-        runOnUiThread(() -> presenter.fetchClients());
+        runOnUiThread(() -> presenter.fetchAccounts());
     }
 
     @Override
