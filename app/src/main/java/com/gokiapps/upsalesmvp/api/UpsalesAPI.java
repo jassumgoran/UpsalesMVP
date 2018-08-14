@@ -4,13 +4,13 @@ package com.gokiapps.upsalesmvp.api;
  * Created by Goran on 20.4.2018.
  */
 
-import android.database.Observable;
 
 import com.gokiapps.upsalesmvp.model.response.AccountsResponse;
 import com.gokiapps.upsalesmvp.model.response.UsersResponse;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -26,7 +26,7 @@ public interface UpsalesAPI {
     Call<AccountsResponse> getAccounts(@Query("offset") int offset, @Query("limit") int limit, @Query("sort") String sortBy);
 
     @GET(API_ACCOUNTS)
-    Observable<AccountsResponse> getAccountsObservable(@Query("offset") int offset, @Query("limit") int limit, @Query("sort") String sortBy);
+    Observable<AccountsResponse> getAccountsList(@Query("offset") int offset, @Query("limit") int limit, @Query("sort") String sortBy);
 
     @GET(API_ACCOUNTS)
     Call<AccountsResponse> getClientsByAccountManager(@Query("offset") int offset, @Query("limit") int limit, @Query("sort") String sortBy, @Query("user.id") List<Integer> userIds);

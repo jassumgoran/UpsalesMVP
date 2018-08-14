@@ -36,6 +36,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     // https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxandroid
     implementation group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.0.2'
     // https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxjava

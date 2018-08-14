@@ -2,16 +2,15 @@ package com.gokiapps.upsalesmvp.presenter;
 
 import com.gokiapps.upsalesmvp.Constants;
 import com.gokiapps.upsalesmvp.api.ApiClient;
-
 import com.gokiapps.upsalesmvp.model.Account;
 import com.gokiapps.upsalesmvp.model.response.AccountsResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivityPresenter {
 
@@ -21,9 +20,12 @@ public class MainActivityPresenter {
     int offset = 0;
     Integer totalServerAccounts = 0;
 
+    private CompositeDisposable compositeDisposable;
+
     public MainActivityPresenter(View view) {
         this.view = view;
         this.accounts = new ArrayList<>();
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     private void appendAccounts(List<Account> accounts){
@@ -76,33 +78,26 @@ public class MainActivityPresenter {
     }
 
     public void fetchAccounts(boolean reload){
-
         showProgress(reload);
+        compositeDisposable.add(
+                ApiClient.getClient().getAccountsList(offset * Constants.PAGE_SIZE, Constants.PAGE_SIZE, "name")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(accountsResponse -> {
+                    onAccountsResponse(accountsResponse, reload);
+                })
+        );
+    }
 
-        ApiClient.getClient().getAccounts(offset * Constants.PAGE_SIZE, Constants.PAGE_SIZE, "name").enqueue(new Callback<AccountsResponse>() {
-
-            @Override
-            public void onResponse(Call<AccountsResponse> call, Response<AccountsResponse> response) {
-                if(response.isSuccessful()) {
-                    AccountsResponse accountsResponse = response.body();
-                    totalServerAccounts = accountsResponse.getMetadata().getTotal();
-                    offset++;
-                    List<Account> accounts = accountsResponse.getData();
-
-                    if(accounts != null){
-                        appendAccounts(accounts);
-                        renderAccounts();
-                    }
-                }
-                hideProgress(reload);
-            }
-
-            @Override
-            public void onFailure(Call<AccountsResponse> call, Throwable t) {
-                hideProgress(reload);
-            }
-
-        });
+    private void onAccountsResponse(AccountsResponse accountsResponse, boolean reload){
+        totalServerAccounts = accountsResponse.getMetadata().getTotal();
+        offset++;
+        List<Account> accounts = accountsResponse.getData();
+        if(accounts != null){
+            appendAccounts(accounts);
+            renderAccounts();
+        }
+        hideProgress(reload);
     }
 
     public boolean loadMore(){
@@ -115,6 +110,7 @@ public class MainActivityPresenter {
 
     public void onDestroy(){
         view = null;
+        compositeDisposable.clear();
     }
 
     public interface View {
