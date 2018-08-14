@@ -8,12 +8,18 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.gokiapps.upsalesmvp.model.Account;
 import com.gokiapps.upsalesmvp.presenter.MainActivityPresenter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements MainActivityPresenter.View {
+
+    List<Account> accounts;
 
     @BindView(android.R.id.list)
     ListView lvAccounts;
@@ -32,15 +38,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        accounts = new ArrayList<>();
+
         presenter = new MainActivityPresenter(this);
 
         progressView = LayoutInflater.from(this).inflate(R.layout.progress, null);
         progressView.setVisibility(View.GONE);
 
-        accountsAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, presenter.getAccounts());
+        accountsAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, accounts);
         lvAccounts.setAdapter(accountsAdapter);
         lvAccounts.addFooterView(progressView);
-
 
         handleEvents();
 
@@ -57,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
 
-                if(presenter.loadMore()) {
+                if(presenter.loadMore(accounts.size())) {
                     loadMore();
                     return true;
                 }
@@ -92,8 +99,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
     }
 
     @Override
-    public void renderAccounts() {
-        runOnUiThread(() -> accountsAdapter.notifyDataSetChanged());
+    public void clearAccounts() {
+        this.accounts.clear();
+        this.accountsAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void addAccounts(List<Account> accounts) {
+        this.accounts.addAll(accounts);
+        this.accountsAdapter.notifyDataSetChanged();
+
     }
 
     private void loadMore(){
