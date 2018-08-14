@@ -5,21 +5,17 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.gokiapps.upsalesmvp.model.Account;
 import com.gokiapps.upsalesmvp.presenter.MainActivityPresenter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements MainActivityPresenter.View {
-
-    List<Account> accounts;
 
     @BindView(android.R.id.list)
     ListView lvAccounts;
@@ -28,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
     SwipeRefreshLayout swipeRefreshLayout;
 
     MainActivityPresenter presenter;
-    ArrayAdapter<String> accountsAdapter;
+    AccountsAdapter accountsAdapter;
 
     View progressView;
 
@@ -38,14 +34,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        accounts = new ArrayList<>();
-
         presenter = new MainActivityPresenter(this);
 
         progressView = LayoutInflater.from(this).inflate(R.layout.progress, null);
         progressView.setVisibility(View.GONE);
 
-        accountsAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, accounts);
+        accountsAdapter = new AccountsAdapter();
         lvAccounts.setAdapter(accountsAdapter);
         lvAccounts.addFooterView(progressView);
 
@@ -64,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
 
-                if(presenter.loadMore(accounts.size())) {
+                if(presenter.loadMore(accountsAdapter.getCount())) {
                     loadMore();
                     return true;
                 }
@@ -100,15 +94,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
 
     @Override
     public void clearAccounts() {
-        this.accounts.clear();
-        this.accountsAdapter.notifyDataSetChanged();
+        this.accountsAdapter.clearAccounts();
     }
 
     @Override
     public void addAccounts(List<Account> accounts) {
-        this.accounts.addAll(accounts);
-        this.accountsAdapter.notifyDataSetChanged();
-
+        this.accountsAdapter.addAccounts(accounts);
     }
 
     private void loadMore(){

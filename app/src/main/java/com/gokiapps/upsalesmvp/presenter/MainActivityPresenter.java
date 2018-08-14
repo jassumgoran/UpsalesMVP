@@ -47,7 +47,6 @@ public class MainActivityPresenter {
         }
     }
 
-
     public void refetchAccounts(){
         offset = 0;
 
